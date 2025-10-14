@@ -48,23 +48,21 @@ export default function ReticleTab({ data, setData }: ReticleTabProps) {
           </div>
 
           <div className="flex items-center justify-center py-4">
-            <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-xl bg-card border-2 border-secondary">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-xs text-muted-foreground absolute top-2">N</div>
-                <div className="text-xs text-muted-foreground absolute right-2">E</div>
-                <div className="text-xs text-muted-foreground absolute bottom-2">S</div>
-                <div className="text-xs text-muted-foreground absolute left-2">W</div>
-                <div
-                  className="absolute w-1 h-8 bg-accent rounded-full origin-bottom"
-                  style={{
-                    transform: `rotate(${data.windAngle}deg) translateY(-50%)`,
-                    left: '50%',
-                    top: '50%',
-                    marginLeft: '-2px',
-                  }}
-                />
-                <div className="w-4 h-4 rounded-full bg-primary" />
+            <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-xl bg-card border-2 border-secondary flex items-center justify-center">
+              <div className="text-xs text-muted-foreground absolute top-4">N</div>
+              <div className="text-xs text-muted-foreground absolute right-4">E</div>
+              <div className="text-xs text-muted-foreground absolute bottom-4">S</div>
+              <div className="text-xs text-muted-foreground absolute left-4">W</div>
+              <div
+                className="absolute w-1 h-16 bg-accent rounded-full"
+                style={{
+                  transform: `rotate(${data.windAngle}deg)`,
+                  transformOrigin: 'center',
+                }}
+              >
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-accent" />
               </div>
+              <div className="w-4 h-4 rounded-full bg-primary z-10" />
             </div>
           </div>
         </div>

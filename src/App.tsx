@@ -33,15 +33,15 @@ function App() {
     clickValue: 0.25,
     zeroOffset: 0,
     rifleCant: 0,
-    altitude: 1500,
-    windSpeed: 14,
-    windAngle: 45,
+    altitude: 0,
+    windSpeed: 10,
+    windAngle: 90,
     temperature: 15,
     pressure: 1013,
-    humidity: 45,
-    densityAltitude: 1800,
-    coriolisEnabled: true,
-    spinDriftEnabled: true,
+    humidity: 50,
+    densityAltitude: 0,
+    coriolisEnabled: false,
+    spinDriftEnabled: false,
     latitude: 42,
     azimuth: 90,
     gyroDrift: 'AUTO',
@@ -55,10 +55,15 @@ function App() {
       toast.error('No ballistic data available')
       return
     }
-    const results = calculateTrajectory(ballisticData)
-    setTrajectoryData(results)
-    setActiveTab('trajectory')
-    toast.success('Trajectory calculated')
+    try {
+      const results = calculateTrajectory(ballisticData)
+      setTrajectoryData(results)
+      setActiveTab('trajectory')
+      toast.success('Trajectory calculated')
+    } catch (error) {
+      toast.error('Calculation error - check inputs')
+      console.error('Calculation error:', error)
+    }
   }
 
   const handleExport = () => {
@@ -121,7 +126,7 @@ function App() {
         </div>
       </header>
 
-      <main className="container mx-auto p-3 md:p-4 pb-20">
+      <main className="container mx-auto p-3 md:p-4 pb-6 max-w-6xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-4 md:mb-6 bg-card h-auto p-1">
             <TabsTrigger value="profiles" className="text-xs md:text-sm px-2 py-2 md:px-4 md:py-2.5">Profiles</TabsTrigger>

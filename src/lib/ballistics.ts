@@ -43,7 +43,7 @@ function getDragCoefficient(velocity: number, bcType: 'G1' | 'G7'): number {
 function calculateAirDensity(temp: number, pressure: number, humidity: number, altitude: number): number {
   const tempK = (temp + 273.15)
   const pressurePa = pressure * 100
-  const altitudeM = altitude * 0.3048
+  const altitudeM = altitude
   
   const satVaporPressure = 611.21 * Math.exp((18.678 - temp / 234.5) * (temp / (257.14 + temp)))
   const vaporPressure = (humidity / 100) * satVaporPressure
@@ -56,6 +56,16 @@ function calculateAirDensity(temp: number, pressure: number, humidity: number, a
 }
 
 export function calculateTrajectory(data: BallisticData): TrajectoryResult[] {
+  if (data.muzzleVelocity < 500 || data.muzzleVelocity > 4500) {
+    throw new Error('Muzzle velocity must be between 500-4500 fps')
+  }
+  if (data.ballisticCoefficient < 0.1 || data.ballisticCoefficient > 1.0) {
+    throw new Error('Ballistic coefficient must be between 0.1-1.0')
+  }
+  if (data.zeroDistance <= 0 || data.zeroDistance > 1000) {
+    throw new Error('Zero distance must be between 1-1000 yards')
+  }
+  
   const results: TrajectoryResult[] = []
   const dt = 0.001
   const ranges = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]

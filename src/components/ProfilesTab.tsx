@@ -20,7 +20,7 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
         <div>
           <Label htmlFor="rifle" className="text-sm text-muted-foreground uppercase tracking-wide">Rifle</Label>
           <Select value={data.rifle} onValueChange={(v) => setData((prev) => ({ ...prev!, rifle: v }))}>
-            <SelectTrigger id="rifle" className="mt-2 bg-white text-foreground">
+            <SelectTrigger id="rifle" className="mt-2 bg-secondary text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -34,7 +34,7 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
         <div>
           <Label htmlFor="cartridge" className="text-sm text-muted-foreground uppercase tracking-wide">Cartridge</Label>
           <Select value={data.cartridge} onValueChange={(v) => setData((prev) => ({ ...prev!, cartridge: v }))}>
-            <SelectTrigger id="cartridge" className="mt-2 bg-white text-foreground">
+            <SelectTrigger id="cartridge" className="mt-2 bg-secondary text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -48,7 +48,7 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
         <div>
           <Label htmlFor="preset" className="text-sm text-muted-foreground uppercase tracking-wide">Preset Bank</Label>
           <Select value={data.presetBank} onValueChange={(v) => setData((prev) => ({ ...prev!, presetBank: v }))}>
-            <SelectTrigger id="preset" className="mt-2 bg-white text-foreground">
+            <SelectTrigger id="preset" className="mt-2 bg-secondary text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -80,6 +80,8 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
               <Input
                 id="zero-distance"
                 type="number"
+                min="1"
+                max="1000"
                 value={data.zeroDistance}
                 onChange={(e) => setData((prev) => ({ ...prev!, zeroDistance: Number(e.target.value) }))}
                 className="bg-muted text-accent font-bold"
@@ -91,7 +93,7 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
           <div>
             <Label htmlFor="focal-plane" className="text-xs text-muted-foreground">Focal plane</Label>
             <Select value={data.focalPlane} onValueChange={(v: 'FFP' | 'SFP') => setData((prev) => ({ ...prev!, focalPlane: v }))}>
-              <SelectTrigger id="focal-plane" className="mt-1 bg-white text-foreground">
+              <SelectTrigger id="focal-plane" className="mt-1 bg-secondary text-foreground">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

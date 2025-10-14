@@ -54,6 +54,8 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                 <Input
                   id="muzzle-velocity"
                   type="number"
+                  min="500"
+                  max="4500"
                   value={data.muzzleVelocity}
                   onChange={(e) => setData((prev) => ({ ...prev!, muzzleVelocity: Number(e.target.value) }))}
                   className="bg-muted text-accent font-bold"
@@ -69,12 +71,14 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   id="bc"
                   type="number"
                   step="0.001"
+                  min="0.1"
+                  max="1.0"
                   value={data.ballisticCoefficient}
                   onChange={(e) => setData((prev) => ({ ...prev!, ballisticCoefficient: Number(e.target.value) }))}
                   className="bg-muted text-accent font-bold flex-1"
                 />
                 <Select value={data.bcType} onValueChange={(v: 'G1' | 'G7') => setData((prev) => ({ ...prev!, bcType: v }))}>
-                  <SelectTrigger className="w-24 bg-white text-foreground">
+                  <SelectTrigger className="w-24 bg-secondary text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
