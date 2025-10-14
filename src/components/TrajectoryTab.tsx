@@ -15,10 +15,10 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
   const maxDrop = Math.max(...data.map(d => Math.abs(d.dropMOA)), 1)
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6">
+    <div className="space-y-4 md:space-y-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Trajectory</h3>
-        <div className="relative w-full h-48 bg-background rounded-lg border border-secondary overflow-hidden">
+        <div className="relative w-full h-40 md:h-48 bg-background rounded-lg border border-secondary overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none">
             <line x1="40" y1="160" x2="380" y2="160" stroke="currentColor" strokeWidth="1" className="text-secondary" />
             <line x1="40" y1="20" x2="40" y2="160" stroke="currentColor" strokeWidth="1" className="text-secondary" />
@@ -43,9 +43,9 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Output Units</h3>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <Button
             variant={outputUnit === 'MOA' ? 'default' : 'outline'}
             onClick={() => setOutputUnit('MOA')}
@@ -77,68 +77,70 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Solutions</h3>
         {data.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
+          <div className="text-center py-12 text-muted-foreground text-sm">
             Click Calculate to generate trajectory data
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-secondary">
-                  <TableHead className="text-foreground font-bold">Range</TableHead>
-                  <TableHead className="text-foreground font-bold">Drop MOA</TableHead>
-                  <TableHead className="text-foreground font-bold">Drop MIL</TableHead>
-                  <TableHead className="text-foreground font-bold">Wind MOA</TableHead>
-                  <TableHead className="text-foreground font-bold">Clicks</TableHead>
-                  <TableHead className="text-foreground font-bold">Velocity</TableHead>
-                  <TableHead className="text-foreground font-bold">Energy</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((row, i) => (
-                  <TableRow key={i} className="border-border">
-                    <TableCell className="text-accent font-medium">{row.range}</TableCell>
-                    <TableCell className="text-success">{row.dropMOA.toFixed(2)}</TableCell>
-                    <TableCell className="text-success">{row.dropMIL.toFixed(2)}</TableCell>
-                    <TableCell className="text-foreground">{row.windMOA.toFixed(2)}</TableCell>
-                    <TableCell className="text-amber-400 font-bold">{row.clicks}</TableCell>
-                    <TableCell className="text-muted-foreground">{row.velocity.toFixed(0)}</TableCell>
-                    <TableCell className="text-muted-foreground">{row.energy.toFixed(0)}</TableCell>
+          <div className="overflow-x-auto -mx-4 md:mx-0">
+            <div className="min-w-full inline-block align-middle px-4 md:px-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-secondary">
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm">Range</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm">Drop MOA</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm hidden sm:table-cell">Drop MIL</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm">Wind MOA</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm hidden md:table-cell">Clicks</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm hidden lg:table-cell">Velocity</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs md:text-sm hidden lg:table-cell">Energy</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {data.map((row, i) => (
+                    <TableRow key={i} className="border-border">
+                      <TableCell className="text-accent font-medium text-xs md:text-sm">{row.range}</TableCell>
+                      <TableCell className="text-success text-xs md:text-sm">{row.dropMOA.toFixed(2)}</TableCell>
+                      <TableCell className="text-success text-xs md:text-sm hidden sm:table-cell">{row.dropMIL.toFixed(2)}</TableCell>
+                      <TableCell className="text-foreground text-xs md:text-sm">{row.windMOA.toFixed(2)}</TableCell>
+                      <TableCell className="text-amber-400 font-bold text-xs md:text-sm hidden md:table-cell">{row.clicks}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs md:text-sm hidden lg:table-cell">{row.velocity.toFixed(0)}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs md:text-sm hidden lg:table-cell">{row.energy.toFixed(0)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         )}
       </Card>
 
       {data.length > 0 && ballisticData && (
-        <Card className="p-6">
+        <Card className="p-4 md:p-6">
           <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Summary</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
+          <div className="space-y-3 md:space-y-4">
+            <div className="flex justify-between items-center gap-2">
               <span className="text-xs text-muted-foreground">Zero shift</span>
-              <div className="bg-muted px-4 py-2 rounded-md">
-                <span className="text-accent font-bold">
+              <div className="bg-muted px-3 md:px-4 py-2 rounded-md">
+                <span className="text-accent font-bold text-xs md:text-sm">
                   {ballisticData.zeroOffset.toFixed(2)} {ballisticData.turretUnits}
                 </span>
               </div>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-2">
               <span className="text-xs text-muted-foreground">Wind hold @ 500</span>
-              <div className="bg-muted px-4 py-2 rounded-md">
-                <span className="text-accent font-bold">
+              <div className="bg-muted px-3 md:px-4 py-2 rounded-md">
+                <span className="text-accent font-bold text-xs md:text-sm">
                   {data.find(d => d.range === 500)?.windMOA.toFixed(2) || 'N/A'} MOA
                 </span>
               </div>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-2">
               <span className="text-xs text-muted-foreground">Clicks up @ 500</span>
-              <div className="bg-muted px-4 py-2 rounded-md">
-                <span className="text-accent font-bold">
+              <div className="bg-muted px-3 md:px-4 py-2 rounded-md">
+                <span className="text-accent font-bold text-xs md:text-sm">
                   {data.find(d => d.range === 500)?.clicks || 'N/A'} per {ballisticData.clickValue}
                 </span>
               </div>

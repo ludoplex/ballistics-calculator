@@ -98,34 +98,36 @@ function App() {
     <div className="min-h-screen bg-background text-foreground">
       <Toaster />
       <header className="sticky top-0 z-50 bg-card border-b border-border">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">GUNDOM</h1>
+        <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">GUNDOM</h1>
           <div className="flex gap-2">
             <Button
               onClick={handleCalculate}
-              className="bg-primary hover:bg-primary/90"
+              size="sm"
+              className="bg-primary hover:bg-primary/90 md:h-10"
             >
-              <Calculator className="mr-2" weight="bold" />
-              Calculate
+              <Calculator className="md:mr-2" weight="bold" />
+              <span className="hidden md:inline">Calculate</span>
             </Button>
             <Button
               onClick={handleExport}
-              className="bg-success hover:bg-success/90 text-success-foreground"
+              size="sm"
+              className="bg-success hover:bg-success/90 text-success-foreground md:h-10"
             >
-              <Export className="mr-2" weight="bold" />
-              Export
+              <Export className="md:mr-2" weight="bold" />
+              <span className="hidden md:inline">Export</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 pb-20">
+      <main className="container mx-auto p-3 md:p-4 pb-20">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 bg-card">
-            <TabsTrigger value="profiles">Profiles</TabsTrigger>
-            <TabsTrigger value="ballistics">Ballistics</TabsTrigger>
-            <TabsTrigger value="reticle">Reticle</TabsTrigger>
-            <TabsTrigger value="trajectory">Trajectory</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 mb-4 md:mb-6 bg-card h-auto p-1">
+            <TabsTrigger value="profiles" className="text-xs md:text-sm px-2 py-2 md:px-4 md:py-2.5">Profiles</TabsTrigger>
+            <TabsTrigger value="ballistics" className="text-xs md:text-sm px-2 py-2 md:px-4 md:py-2.5">Ballistics</TabsTrigger>
+            <TabsTrigger value="reticle" className="text-xs md:text-sm px-2 py-2 md:px-4 md:py-2.5">Reticle</TabsTrigger>
+            <TabsTrigger value="trajectory" className="text-xs md:text-sm px-2 py-2 md:px-4 md:py-2.5">Trajectory</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profiles">

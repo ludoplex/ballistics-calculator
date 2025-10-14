@@ -15,8 +15,8 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
   if (!data) return null
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6 space-y-4">
+    <div className="space-y-4 md:space-y-6">
+      <Card className="p-4 md:p-6 space-y-4">
         <div>
           <Label htmlFor="rifle" className="text-sm text-muted-foreground uppercase tracking-wide">Rifle</Label>
           <Select value={data.rifle} onValueChange={(v) => setData((prev) => ({ ...prev!, rifle: v }))}>
@@ -59,7 +59,7 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
           </Select>
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <Button className="flex-1 bg-primary hover:bg-primary/90">
             <Plus className="mr-2" weight="bold" />
             Add Profile
@@ -71,9 +71,9 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Scope Setup</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="zero-distance" className="text-xs text-muted-foreground">Zero distance</Label>
             <div className="flex gap-2 mt-1">

@@ -14,10 +14,10 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
   if (!data) return null
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6">
+    <div className="space-y-4 md:space-y-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Ballistics Inputs</h3>
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div className="space-y-4">
             <div>
               <Label htmlFor="zero-range" className="text-xs text-muted-foreground">Zero range</Label>
@@ -197,9 +197,9 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Advanced Effects</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <Button
             variant={data.coriolisEnabled ? 'default' : 'outline'}
             onClick={() => setData((prev) => ({ ...prev!, coriolisEnabled: !prev!.coriolisEnabled }))}
@@ -232,7 +232,7 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
               className="bg-muted text-accent font-bold text-sm h-9"
             />
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2 md:col-span-1">
             <Input
               type="text"
               value={data.gyroDrift}

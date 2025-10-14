@@ -13,10 +13,10 @@ export default function ReticleTab({ data, setData }: ReticleTabProps) {
   if (!data) return null
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6">
+    <div className="space-y-4 md:space-y-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Wind</h3>
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div className="space-y-4">
             <div>
               <Label htmlFor="wind-speed" className="text-xs text-muted-foreground">Speed</Label>
@@ -47,8 +47,8 @@ export default function ReticleTab({ data, setData }: ReticleTabProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-center">
-            <div className="relative w-48 h-48 rounded-xl bg-card border-2 border-secondary">
+          <div className="flex items-center justify-center py-4">
+            <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-xl bg-card border-2 border-secondary">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-xs text-muted-foreground absolute top-2">N</div>
                 <div className="text-xs text-muted-foreground absolute right-2">E</div>
@@ -70,9 +70,9 @@ export default function ReticleTab({ data, setData }: ReticleTabProps) {
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Atmosphere</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="temperature" className="text-xs text-muted-foreground">Temperature</Label>
             <div className="flex gap-2 mt-1">
@@ -131,7 +131,7 @@ export default function ReticleTab({ data, setData }: ReticleTabProps) {
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Reticle Scaffold</h3>
         <div className="relative w-full aspect-[2/1] bg-background rounded-lg border border-secondary overflow-hidden">
           <svg className="w-full h-full">
@@ -144,7 +144,7 @@ export default function ReticleTab({ data, setData }: ReticleTabProps) {
             <circle cx="50%" cy="50%" r="4" className="fill-success" />
           </svg>
         </div>
-        <div className="grid md:grid-cols-2 gap-3 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
           <Button variant="outline" className="bg-muted text-accent font-bold text-sm">
             Scale: 1.0 @ {data.magnification}×
           </Button>
