@@ -52,9 +52,15 @@ function computeClicks(unit: 'MOA' | 'MIL', clickValue: number, dropMOA: number,
   return Math.round(dropMOA / clickValue)
 }
 
+function g7ToG1(bcG7: number): number {
+  return bcG7 * 0.512
+}
+
 function normalizeInputs(data: BallisticData) {
   const muzzleVelocityFps: number = data.muzzleVelocity ?? 2600
-  const bcG1: number = data.ballisticCoefficient ?? 0.475
+  const bcRaw: number = data.ballisticCoefficient ?? 0.475
+  const bcType: 'G1' | 'G7' = data.bcType ?? 'G7'
+  const bcG1: number = bcType === 'G7' ? g7ToG1(bcRaw) : bcRaw
   const bulletWeightGrains: number = data.bulletMass ?? 168
 
   const zeroRangeYards: number = data.zeroDistance ?? 100
