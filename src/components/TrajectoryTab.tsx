@@ -12,7 +12,9 @@ interface TrajectoryTabProps {
 
 export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballisticData }: TrajectoryTabProps) {
   const maxRange = data.length > 0 ? data[data.length - 1].range : 1000
-  const maxDrop = Math.max(...data.map(d => Math.abs(d.dropMOA)), 1)
+  const minDrop = Math.min(...data.map(d => d.dropMOA), 0)
+  const maxDrop = Math.max(...data.map(d => d.dropMOA), 1)
+  const dropRange = maxDrop - minDrop
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -27,7 +29,8 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
               <polyline
                 points={data.map((d, i) => {
                   const x = 40 + (i / (data.length - 1)) * 340
-                  const y = 160 - (Math.abs(d.dropMOA) / maxDrop) * 120
+                  const normalizedDrop = (d.dropMOA - minDrop) / (dropRange || 1)
+                  const y = 160 - normalizedDrop * 120
                   return `${x},${y}`
                 }).join(' ')}
                 fill="none"
