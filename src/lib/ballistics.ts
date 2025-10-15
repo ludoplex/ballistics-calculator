@@ -6,7 +6,6 @@ const INCHES_PER_FOOT = 12
 const INCHES_PER_YARD = 36
 const MOA_INCHES_100Y = 1.0471975511965976
 const INCHES_PER_YARD_PER_MIL = INCHES_PER_YARD * 0.001
-const DRAG_K0_PER_FT = 6e-8
 
 function clamp(v: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, v))
@@ -125,23 +124,20 @@ type SimState = {
   t_s: number
 }
 
-function stepDrag(state: SimState, dx_ft: number, bc: number, K: number): SimState {
+function stepDrag(state: SimState, dx_ft: number, bc: number, rho: number): SimState {
   const subSteps = Math.max(1, Math.min(10, Math.ceil(dx_ft / 3)))
   const h = dx_ft / subSteps
   let st = { ...state }
 
   for (let i = 0; i < subSteps; i++) {
     const v = Math.max(1, st.v_fps)
-    const kdx = (K / bc) * h
-    const v_new = v / (1 + v * kdx)
-    const scale = v_new / v
-    let vx = st.vx_fps * scale
-    let vy = st.vy_fps * scale
-
-    const v_avg = 0.5 * (v + v_new)
-    const dt = h / Math.max(1, v_avg)
-
-    vy -= G_FTPS2 * dt
+    const dt = h / v
+    
+    const dragCoef = (rho / bc) * v * dt
+    const dragFactor = 1 / (1 + dragCoef)
+    
+    let vx = st.vx_fps * dragFactor
+    let vy = st.vy_fps * dragFactor - G_FTPS2 * dt
 
     const vx_avg = 0.5 * (st.vx_fps + vx)
     const vy_avg = 0.5 * (st.vy_fps + vy)
@@ -162,7 +158,7 @@ function stepDrag(state: SimState, dx_ft: number, bc: number, K: number): SimSta
 function solveBoreAngle(
   v0_fps: number,
   bc: number,
-  K: number,
+  rho: number,
   zeroRangeYards: number,
   sightHeightFeet: number
 ) {
@@ -187,7 +183,7 @@ function solveBoreAngle(
     while (st.x_ft < xZero_ft) {
       const remaining = xZero_ft - st.x_ft
       const step = Math.min(3 * FEET_PER_YARD, remaining)
-      st = stepDrag(st, step, bc, K)
+      st = stepDrag(st, step, bc, rho)
       if (st.y_ft < sightHeightFeet - 5) break
     }
 
@@ -223,10 +219,10 @@ export function calculateTrajectory(data: BallisticData): TrajectoryResult[] {
   } = inputs
 
   const sigma = getDensityRatio(inputs)
-  const K = DRAG_K0_PER_FT * sigma
+  const rho = 1.2e-4 * sigma
 
   const sightHeightFeet = sightHeightInches / INCHES_PER_FOOT
-  const boreAngle = solveBoreAngle(muzzleVelocityFps, bcG1, K, zeroRangeYards, sightHeightFeet)
+  const boreAngle = solveBoreAngle(muzzleVelocityFps, bcG1, rho, zeroRangeYards, sightHeightFeet)
 
   let st: SimState = {
     x_ft: 0,
@@ -250,7 +246,7 @@ export function calculateTrajectory(data: BallisticData): TrajectoryResult[] {
     const step = Math.min(sampleStep_ft, maxX_ft - st.x_ft)
     const pre_t = st.t_s
 
-    st = stepDrag(st, step, bcG1, K)
+    st = stepDrag(st, step, bcG1, rho)
 
     const dt = st.t_s - pre_t
     accumulatedDrift_ft += crosswind_fps * dt
