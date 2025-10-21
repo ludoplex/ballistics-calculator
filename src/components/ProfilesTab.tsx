@@ -22,12 +22,14 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
   const [currentProfileId, setCurrentProfileId] = useKV<string>('current-profile-id', DEFAULT_PROFILES[0].id)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  if (!data || !profiles || !currentProfileId) return null
+  if (!data) return null
 
-  const currentProfile = profiles.find(p => p.id === currentProfileId)
+  const safeProfiles = profiles || DEFAULT_PROFILES
+  const safeCurrentProfileId = currentProfileId || DEFAULT_PROFILES[0].id
+  const currentProfile = safeProfiles.find(p => p.id === safeCurrentProfileId)
 
   const handleProfileChange = (profileId: string) => {
-    const profile = profiles.find(p => p.id === profileId)
+    const profile = safeProfiles.find(p => p.id === profileId)
     if (profile) {
       setCurrentProfileId(profileId)
       setData(profile.data)
@@ -50,13 +52,13 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
   }
 
   const handleDeleteProfile = () => {
-    if (!profiles || profiles.length <= 1) {
+    if (safeProfiles.length <= 1) {
       toast.error('Cannot delete last profile')
       return
     }
     
     setProfiles(current => {
-      const filtered = (current || []).filter(p => p.id !== currentProfileId)
+      const filtered = (current || []).filter(p => p.id !== safeCurrentProfileId)
       if (filtered.length > 0) {
         setCurrentProfileId(filtered[0].id)
         setData(filtered[0].data)
@@ -114,12 +116,12 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
             Saved Profiles
           </Label>
           <div className="flex gap-2 mt-2">
-            <Select value={currentProfileId} onValueChange={handleProfileChange}>
+            <Select value={safeCurrentProfileId} onValueChange={handleProfileChange}>
               <SelectTrigger id="saved-profile" className="flex-1 bg-secondary text-foreground">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {profiles.map(profile => (
+                {safeProfiles.map(profile => (
                   <SelectItem key={profile.id} value={profile.id}>
                     {profile.name}
                   </SelectItem>
@@ -131,7 +133,7 @@ export default function ProfilesTab({ data, setData }: ProfilesTabProps) {
               size="icon"
               onClick={handleDeleteProfile}
               className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-              disabled={profiles.length <= 1}
+              disabled={safeProfiles.length <= 1}
             >
               <Trash weight="bold" />
             </Button>
