@@ -1,5 +1,8 @@
 # GUNDOM Ballistics Calculator
 
+<!-- ⚠️ DO NOT DELETE THIS DOCUMENT ⚠️ -->
+<!-- This PRD defines the core requirements and design specifications for the application -->
+
 A professional-grade external ballistics calculator for long-range shooting sports and hunting that provides precision trajectory solutions accounting for bullet drop, wind drift, atmospheric conditions, and advanced Coriolis/gyroscopic effects.
 
 **Experience Qualities**:
@@ -145,3 +148,154 @@ Subtle and functional - this is a tool, not a showcase. Animations should clarif
   - Bottom action buttons stack vertically
   - Compress spacing slightly (p-4 instead of p-6)
   - Sticky header with Calculate/Export always visible
+
+---
+
+## Reference Images
+
+<!-- ⚠️ DO NOT DELETE THIS SECTION ⚠️ -->
+<!-- These reference images from Strelok Pro inform the feature set and UX patterns -->
+
+The following reference screenshots from Strelok Pro ballistics app are stored in `/src/assets/images/` and serve as functional reference for feature implementation:
+
+### screenshot_1_small.png - Main Calculator Interface
+**Purpose**: Primary input screen layout reference
+- Shows distance, slope angle, wind speed/direction inputs
+- Displays vertical/horizontal correction outputs in multiple units (MOA, MRAD, inches, clicks)
+- "Calculate!" primary action button with "Reticle" secondary action
+- Clean separation between inputs (top) and results (bottom)
+- Weather conditions summary banner
+- Rifle/ammunition configuration display
+
+**Key Learnings**:
+- Input fields should be clearly labeled with units inline
+- Results should display simultaneously in all relevant units for quick scanning
+- Weather summary provides context for calculations
+- Configuration reminder keeps user aware of active profile
+
+### screenshot_3_small.png - Reticle Visualization
+**Purpose**: Visual reticle overlay with trajectory data
+- Circular reticle view with crosshair grid
+- Wind drift visualization overlaid on reticle
+- Range markings at various distances with precise hold values
+- Distance slider for adjusting target range
+- Reticle type selector dropdown
+- Search and settings actions
+
+**Key Learnings**:
+- Reticle visualization is valuable for understanding hold-overs visually
+- Multiple reticle patterns should be supported (future enhancement)
+- Interactive range adjustment provides real-time feedback
+- Wind data integrated into visual display
+
+### screenshot_4_small.png - Additional Ballistic Info
+**Purpose**: Detailed secondary calculations modal
+- Bullet speed corrected for current conditions
+- Retained velocity at distance
+- Sound speed calculation
+- Time of flight
+- Click value at distance in inches
+- Muzzle energy and retained energy
+
+**Key Learnings**:
+- Secondary data in modal/dialog keeps main interface clean
+- Energy calculations important for hunting applications
+- Sound speed helps with timing observations
+- All values clearly labeled with appropriate units
+
+### screenshot_5_small.png - Trajectory Table
+**Purpose**: Complete trajectory solution table
+- Distance increments (100-700 yards shown)
+- Bullet speed per distance
+- Vertical correction (MOA)
+- Horizontal wind correction (MOA)
+- Compact tabular format for easy scanning
+- Settings, email, and close actions
+
+**Key Learnings**:
+- Table format is essential for detailed trajectory analysis
+- Distance increments should be configurable (25yd, 50yd, 100yd)
+- Multiple correction columns allow comparison
+- Export functionality (email) is critical for field use
+- Compact display fits maximum data on screen
+
+### screenshot_6_small.png - Rifle/Cartridge Editor
+**Purpose**: Profile data entry modal
+- Manufacturer dropdown (Federal)
+- Cartridge/bullet selection
+- Bullet weight input (grains)
+- Ballistic coefficient with precision
+- Bullet speed (fps)
+- Temperature at chronograph
+- Temperature sensitivity factor
+- OK/Cancel actions
+
+**Key Learnings**:
+- Profile editing in focused modal reduces complexity
+- Hierarchical selection (manufacturer → cartridge → specifics)
+- Temperature sensitivity affects velocity calculations
+- Clear save/cancel actions prevent accidental changes
+
+### screenshot_7_small.png - Weather Conditions
+**Purpose**: Environmental inputs modal
+- Altitude (feet)
+- Temperature (°F)
+- Pressure (inHg)
+- Pressure unit selector dropdown
+- Standard atmosphere button for defaults
+- OK/Cancel actions
+
+**Key Learnings**:
+- Weather inputs grouped separately from ballistic data
+- Unit conversion options important (metric/imperial)
+- Standard atmosphere defaults simplify common case
+- Clear modal pattern for focused data entry
+
+### screenshot_8_small.png - Profile Summary
+**Purpose**: Quick profile overview
+- Profile name display
+- Profile name edit field
+- Scope configuration summary
+- Zeroing weather conditions
+- Cartridge details with key specs (velocity/BC)
+- Close action
+
+**Key Learnings**:
+- Profile summary provides quick confirmation of active settings
+- Editable profile name for organization
+- Key specifications displayed for verification
+- Zeroing conditions are critical reference data
+
+---
+
+## Implementation Status
+
+<!-- ⚠️ DO NOT DELETE THIS SECTION ⚠️ -->
+<!-- Track feature implementation progress against the PRD -->
+
+### Completed Features ✓
+- ✓ Profile management (save/load/delete/import/export)
+- ✓ Ballistic calculations with industry-standard equations
+- ✓ Environmental inputs (wind, temperature, pressure, humidity, altitude)
+- ✓ Multi-unit output (MOA, MIL, cm, clicks)
+- ✓ Data export to CSV
+- ✓ Trajectory visualization chart
+- ✓ Comprehensive trajectory table
+- ✓ Input validation and error handling
+- ✓ Responsive mobile layout
+- ✓ Wind direction compass visualization
+- ✓ Reticle scaffold preview
+- ✓ Advanced effects (Coriolis, Spin Drift)
+- ✓ Persistent state with useKV
+- ✓ Tab-based navigation (Profiles/Ballistics/Environment/Trajectory)
+- ✓ Professional tactical dark theme
+
+### Future Enhancements (Optional)
+- ⚪ Interactive reticle overlay with distance slider (per screenshot_3)
+- ⚪ Additional info modal with secondary calculations (per screenshot_4)
+- ⚪ Multiple reticle pattern library
+- ⚪ Temperature sensitivity factors in velocity calculations
+- ⚪ Standard atmosphere quick-set button
+- ⚪ Slope angle compensation
+- ⚪ Range unit toggling (yards/meters)
+- ⚪ Detailed summary view modal (per screenshot_8)
