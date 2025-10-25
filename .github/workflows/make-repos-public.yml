@@ -33,6 +33,8 @@ on:
 jobs:
   make-repos-public:
     runs-on: ubuntu-latest
+    # This workflow uses ADMIN_TOKEN secret, not GITHUB_TOKEN
+    permissions: {}
     steps:
       - name: Check for ADMIN_TOKEN
         run: |
