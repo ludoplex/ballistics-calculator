@@ -54,6 +54,7 @@ jobs:
           INCLUDE_FORKS: ${{ inputs.include_forks }}
           INCLUDE_ARCHIVED: ${{ inputs.include_archived }}
           APPLY: ${{ inputs.apply }}
+          # OWNER is set for clarity in logs only; API calls use /user endpoints
           OWNER: "ludoplex"
         run: |
           set -euo pipefail
@@ -77,12 +78,12 @@ jobs:
             while true; do
               echo "Fetching page $page of repositories..." >&2
               
-              response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              response=$(curl -s -f -H "Authorization: token $GITHUB_TOKEN" \
                 -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/user/repos?affiliation=owner&per_page=$per_page&page=$page")
+                "https://api.github.com/user/repos?affiliation=owner&per_page=$per_page&page=$page" || echo "[]")
               
-              # Check if response is empty array
-              if [ "$(echo "$response" | jq '. | length')" = "0" ]; then
+              # Check if response is empty array or null
+              if [ "$(echo "$response" | jq '. | length')" = "0" ] || [ "$response" = "[]" ]; then
                 break
               fi
               
