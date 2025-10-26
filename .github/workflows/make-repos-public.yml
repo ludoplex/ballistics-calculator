@@ -1,0 +1,219 @@
+name: Make Repositories Public
+
+# This workflow allows the repository owner to manually make all repositories
+# under their personal account public with a safe dry-run by default.
+#
+# ADMIN_TOKEN Setup:
+# - Create a classic Personal Access Token (PAT) at https://github.com/settings/tokens
+# - Required scopes:
+#   - repo (full control of private repositories)
+#   - For user-owned repos: repo scope is sufficient
+#   - For organization repos: admin:org scope may be needed
+# - Add the token as a repository secret named ADMIN_TOKEN
+
+on:
+  workflow_dispatch:
+    inputs:
+      include_forks:
+        description: 'Include forked repositories'
+        required: false
+        type: boolean
+        default: false
+      include_archived:
+        description: 'Include archived repositories'
+        required: false
+        type: boolean
+        default: false
+      apply:
+        description: 'Apply changes (if false, performs dry-run only)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  make-repos-public:
+    runs-on: ubuntu-latest
+    # This workflow uses ADMIN_TOKEN secret, not GITHUB_TOKEN
+    permissions: {}
+    steps:
+      - name: Check for ADMIN_TOKEN
+        run: |
+          if [ -z "${{ secrets.ADMIN_TOKEN }}" ]; then
+            echo "ERROR: ADMIN_TOKEN secret is not set!"
+            echo "Please create a classic PAT with 'repo' scope and add it as a repository secret."
+            exit 1
+          fi
+          echo "✓ ADMIN_TOKEN is configured"
+
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Make repositories public
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          INCLUDE_FORKS: ${{ inputs.include_forks }}
+          INCLUDE_ARCHIVED: ${{ inputs.include_archived }}
+          APPLY: ${{ inputs.apply }}
+          # OWNER is set for clarity in logs only; API calls use /user endpoints
+          OWNER: "ludoplex"
+        run: |
+          set -euo pipefail
+          
+          echo "=================================================="
+          echo "Make Repositories Public Workflow"
+          echo "=================================================="
+          echo "Owner: $OWNER"
+          echo "Include forks: $INCLUDE_FORKS"
+          echo "Include archived: $INCLUDE_ARCHIVED"
+          echo "Mode: $([ "$APPLY" = "true" ] && echo "APPLY (making changes)" || echo "DRY-RUN (no changes)")"
+          echo "=================================================="
+          echo ""
+          
+          # Function to fetch all repositories with pagination
+          fetch_all_repos() {
+            local page=1
+            local per_page=100
+            local all_repos="[]"
+            
+            while true; do
+              echo "Fetching page $page of repositories..." >&2
+              
+              response=$(curl -s -f -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/user/repos?affiliation=owner&per_page=$per_page&page=$page" || echo "[]")
+              
+              # Check if response is empty array or null
+              if [ "$(echo "$response" | jq '. | length')" = "0" ] || [ "$response" = "[]" ]; then
+                break
+              fi
+              
+              all_repos=$(echo "$all_repos $response" | jq -s 'add')
+              page=$((page + 1))
+            done
+            
+            echo "$all_repos"
+          }
+          
+          # Fetch all repositories
+          echo "Fetching all repositories owned by the authenticated user..."
+          all_repos=$(fetch_all_repos)
+          total_count=$(echo "$all_repos" | jq 'length')
+          echo "Found $total_count total repositories"
+          echo ""
+          
+          # Filter repositories based on criteria
+          filtered_repos=$(echo "$all_repos" | jq --arg include_forks "$INCLUDE_FORKS" \
+            --arg include_archived "$INCLUDE_ARCHIVED" '[
+            .[] | select(
+              .private == true and
+              (if $include_forks == "true" then true else .fork == false end) and
+              (if $include_archived == "true" then true else .archived == false end)
+            )
+          ]')
+          
+          target_count=$(echo "$filtered_repos" | jq 'length')
+          
+          echo "=================================================="
+          echo "Summary of Filters:"
+          echo "=================================================="
+          echo "Total repositories: $total_count"
+          echo "Private repositories: $(echo "$all_repos" | jq '[.[] | select(.private == true)] | length')"
+          echo "After excluding forks: $(echo "$all_repos" | jq --arg include_forks "$INCLUDE_FORKS" '[.[] | select(.private == true and (if $include_forks == "true" then true else .fork == false end))] | length')"
+          echo "After excluding archived: $target_count"
+          echo "=================================================="
+          echo ""
+          
+          if [ "$target_count" = "0" ]; then
+            echo "No repositories match the criteria. Nothing to do."
+            exit 0
+          fi
+          
+          echo "Target repositories ($target_count):"
+          echo "$filtered_repos" | jq -r '.[] | "  - \(.name) (fork: \(.fork), archived: \(.archived))"'
+          echo ""
+          
+          if [ "$APPLY" != "true" ]; then
+            echo "=================================================="
+            echo "DRY-RUN MODE - No changes will be made"
+            echo "=================================================="
+            echo "To actually make these repositories public, re-run with apply=true"
+            exit 0
+          fi
+          
+          echo "=================================================="
+          echo "APPLY MODE - Making repositories public"
+          echo "=================================================="
+          echo ""
+          
+          # Process each repository
+          echo "$filtered_repos" | jq -c '.[]' | while read -r repo; do
+            repo_name=$(echo "$repo" | jq -r '.name')
+            repo_full_name=$(echo "$repo" | jq -r '.full_name')
+            is_archived=$(echo "$repo" | jq -r '.archived')
+            
+            echo "Processing: $repo_full_name"
+            
+            # If archived, need to unarchive first
+            if [ "$is_archived" = "true" ]; then
+              echo "  → Unarchiving repository..."
+              unarchive_response=$(curl -s -w "\n%{http_code}" \
+                -X PATCH \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/$repo_full_name" \
+                -d '{"archived": false}')
+              
+              http_code=$(echo "$unarchive_response" | tail -n1)
+              if [ "$http_code" != "200" ]; then
+                echo "  ✗ Failed to unarchive (HTTP $http_code)"
+                echo "$unarchive_response" | head -n-1
+                continue
+              fi
+              echo "  ✓ Unarchived"
+            fi
+            
+            # Make repository public
+            echo "  → Setting repository to public..."
+            public_response=$(curl -s -w "\n%{http_code}" \
+              -X PATCH \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/$repo_full_name" \
+              -d '{"private": false}')
+            
+            http_code=$(echo "$public_response" | tail -n1)
+            if [ "$http_code" != "200" ]; then
+              echo "  ✗ Failed to make public (HTTP $http_code)"
+              echo "$public_response" | head -n-1
+              continue
+            fi
+            echo "  ✓ Made public"
+            
+            # If was archived, re-archive
+            if [ "$is_archived" = "true" ]; then
+              echo "  → Re-archiving repository..."
+              rearchive_response=$(curl -s -w "\n%{http_code}" \
+                -X PATCH \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/$repo_full_name" \
+                -d '{"archived": true}')
+              
+              http_code=$(echo "$rearchive_response" | tail -n1)
+              if [ "$http_code" != "200" ]; then
+                echo "  ✗ Failed to re-archive (HTTP $http_code)"
+                echo "$rearchive_response" | head -n-1
+                continue
+              fi
+              echo "  ✓ Re-archived"
+            fi
+            
+            echo "  ✓ Successfully processed $repo_name"
+            echo ""
+          done
+          
+          echo "=================================================="
+          echo "Completed"
+          echo "=================================================="

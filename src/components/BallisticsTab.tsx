@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import type { BallisticData } from '@/lib/types'
 
 interface BallisticsTabProps {
@@ -12,6 +13,17 @@ interface BallisticsTabProps {
 
 export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
   if (!data) return null
+
+  const handleNumberInput = (field: keyof BallisticData, value: string, min?: number, max?: number) => {
+    const numValue = parseFloat(value)
+    if (isNaN(numValue)) return
+    
+    let finalValue = numValue
+    if (min !== undefined && numValue < min) finalValue = min
+    if (max !== undefined && numValue > max) finalValue = max
+    
+    setData((prev) => ({ ...prev!, [field]: finalValue }))
+  }
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -25,11 +37,13 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                 <Input
                   id="zero-range"
                   type="number"
+                  min="10"
+                  max="1000"
                   value={data.zeroDistance}
-                  onChange={(e) => setData((prev) => ({ ...prev!, zeroDistance: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('zeroDistance', e.target.value, 10, 1000)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">yd</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[2rem]">yd</span>
               </div>
             </div>
 
@@ -40,11 +54,13 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   id="scope-height-b"
                   type="number"
                   step="0.01"
+                  min="0.5"
+                  max="5"
                   value={data.scopeHeight}
-                  onChange={(e) => setData((prev) => ({ ...prev!, scopeHeight: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('scopeHeight', e.target.value, 0.5, 5)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">in</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[2rem]">in</span>
               </div>
             </div>
 
@@ -57,11 +73,12 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   min="500"
                   max="4500"
                   value={data.muzzleVelocity}
-                  onChange={(e) => setData((prev) => ({ ...prev!, muzzleVelocity: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('muzzleVelocity', e.target.value, 500, 4500)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">fps</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[2rem]">fps</span>
               </div>
+              <p className="text-xs text-muted-foreground mt-1 opacity-70">Valid: 500-4500 fps</p>
             </div>
 
             <div>
@@ -74,7 +91,7 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   min="0.1"
                   max="1.0"
                   value={data.ballisticCoefficient}
-                  onChange={(e) => setData((prev) => ({ ...prev!, ballisticCoefficient: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('ballisticCoefficient', e.target.value, 0.1, 1.0)}
                   className="bg-muted text-accent font-bold flex-1"
                 />
                 <Select value={data.bcType} onValueChange={(v: 'G1' | 'G7') => setData((prev) => ({ ...prev!, bcType: v }))}>
@@ -87,6 +104,7 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   </SelectContent>
                 </Select>
               </div>
+              <p className="text-xs text-muted-foreground mt-1 opacity-70">Valid: 0.1-1.0</p>
             </div>
 
             <div>
@@ -95,11 +113,13 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                 <Input
                   id="bullet-mass"
                   type="number"
+                  min="20"
+                  max="750"
                   value={data.bulletMass}
-                  onChange={(e) => setData((prev) => ({ ...prev!, bulletMass: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('bulletMass', e.target.value, 20, 750)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">gr</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[2rem]">gr</span>
               </div>
             </div>
 
@@ -112,8 +132,17 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   value={data.barrelTwist}
                   onChange={(e) => setData((prev) => ({ ...prev!, barrelTwist: e.target.value }))}
                   className="bg-muted text-accent font-bold"
+                  placeholder="1:10"
                 />
-                <span className="text-muted-foreground self-center text-sm">{data.twistDirection}</span>
+                <Select value={data.twistDirection} onValueChange={(v: 'RH' | 'LH') => setData((prev) => ({ ...prev!, twistDirection: v }))}>
+                  <SelectTrigger className="w-20 bg-secondary text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="RH">RH</SelectItem>
+                    <SelectItem value="LH">LH</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -146,11 +175,13 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   id="click-value"
                   type="number"
                   step="0.01"
+                  min="0.01"
+                  max="1"
                   value={data.clickValue}
-                  onChange={(e) => setData((prev) => ({ ...prev!, clickValue: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('clickValue', e.target.value, 0.01, 1)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">{data.turretUnits}</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[3rem]">{data.turretUnits}</span>
               </div>
             </div>
 
@@ -162,10 +193,10 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   type="number"
                   step="0.01"
                   value={data.zeroOffset}
-                  onChange={(e) => setData((prev) => ({ ...prev!, zeroOffset: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('zeroOffset', e.target.value)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">{data.turretUnits}</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[3rem]">{data.turretUnits}</span>
               </div>
             </div>
 
@@ -176,11 +207,13 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                   id="rifle-cant"
                   type="number"
                   step="0.1"
+                  min="-45"
+                  max="45"
                   value={data.rifleCant}
-                  onChange={(e) => setData((prev) => ({ ...prev!, rifleCant: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('rifleCant', e.target.value, -45, 45)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">°</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[2rem]">°</span>
               </div>
             </div>
 
@@ -190,11 +223,13 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
                 <Input
                   id="altitude"
                   type="number"
+                  min="0"
+                  max="5000"
                   value={data.altitude}
-                  onChange={(e) => setData((prev) => ({ ...prev!, altitude: Number(e.target.value) }))}
+                  onChange={(e) => handleNumberInput('altitude', e.target.value, 0, 5000)}
                   className="bg-muted text-accent font-bold"
                 />
-                <span className="text-muted-foreground self-center text-sm">m</span>
+                <span className="text-muted-foreground self-center text-sm min-w-[2rem]">m</span>
               </div>
             </div>
           </div>
@@ -203,48 +238,63 @@ export default function BallisticsTab({ data, setData }: BallisticsTabProps) {
 
       <Card className="p-4 md:p-6">
         <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Advanced Effects</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <Button
-            variant={data.coriolisEnabled ? 'default' : 'outline'}
-            onClick={() => setData((prev) => ({ ...prev!, coriolisEnabled: !prev!.coriolisEnabled }))}
-            className="text-sm"
-          >
-            Coriolis: {data.coriolisEnabled ? 'ON' : 'OFF'}
-          </Button>
-          <Button
-            variant={data.spinDriftEnabled ? 'default' : 'outline'}
-            onClick={() => setData((prev) => ({ ...prev!, spinDriftEnabled: !prev!.spinDriftEnabled }))}
-            className="text-sm"
-          >
-            Spin: {data.spinDriftEnabled ? 'ON' : 'OFF'}
-          </Button>
-          <div>
-            <Input
-              type="number"
-              value={data.latitude}
-              onChange={(e) => setData((prev) => ({ ...prev!, latitude: Number(e.target.value) }))}
-              placeholder="Latitude"
-              className="bg-muted text-accent font-bold text-sm h-9"
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-medium">Coriolis Effect</Label>
+              <p className="text-xs text-muted-foreground">Account for Earth's rotation</p>
+            </div>
+            <Switch
+              checked={data.coriolisEnabled}
+              onCheckedChange={(checked) => setData((prev) => ({ ...prev!, coriolisEnabled: checked }))}
             />
           </div>
-          <div>
-            <Input
-              type="number"
-              value={data.azimuth}
-              onChange={(e) => setData((prev) => ({ ...prev!, azimuth: Number(e.target.value) }))}
-              placeholder="Azimuth"
-              className="bg-muted text-accent font-bold text-sm h-9"
+          
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-medium">Spin Drift</Label>
+              <p className="text-xs text-muted-foreground">Account for gyroscopic drift</p>
+            </div>
+            <Switch
+              checked={data.spinDriftEnabled}
+              onCheckedChange={(checked) => setData((prev) => ({ ...prev!, spinDriftEnabled: checked }))}
             />
           </div>
-          <div className="sm:col-span-2 md:col-span-1">
-            <Input
-              type="text"
-              value={data.gyroDrift}
-              onChange={(e) => setData((prev) => ({ ...prev!, gyroDrift: e.target.value }))}
-              placeholder="Gyro drift"
-              className="bg-muted text-accent font-bold text-sm h-9"
-            />
-          </div>
+
+          {(data.coriolisEnabled || data.spinDriftEnabled) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border">
+              <div className="mt-3">
+                <Label htmlFor="latitude" className="text-xs text-muted-foreground">Latitude</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    id="latitude"
+                    type="number"
+                    min="-90"
+                    max="90"
+                    value={data.latitude}
+                    onChange={(e) => handleNumberInput('latitude', e.target.value, -90, 90)}
+                    className="bg-muted text-accent font-bold"
+                  />
+                  <span className="text-muted-foreground self-center text-sm">°</span>
+                </div>
+              </div>
+              <div className="mt-3">
+                <Label htmlFor="azimuth" className="text-xs text-muted-foreground">Azimuth</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    id="azimuth"
+                    type="number"
+                    min="0"
+                    max="360"
+                    value={data.azimuth}
+                    onChange={(e) => handleNumberInput('azimuth', e.target.value, 0, 360)}
+                    className="bg-muted text-accent font-bold"
+                  />
+                  <span className="text-muted-foreground self-center text-sm">°</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     </div>
