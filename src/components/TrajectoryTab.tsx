@@ -16,6 +16,48 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
   const maxDrop = Math.max(...data.map(d => d.dropMOA), 1)
   const dropRange = maxDrop - minDrop
 
+  const getDropValue = (row: TrajectoryResult): string => {
+    switch (outputUnit) {
+      case 'MOA':
+        return row.dropMOA.toFixed(2)
+      case 'MIL':
+        return row.dropMIL.toFixed(2)
+      case 'CM':
+        return (row.dropInches * 2.54).toFixed(1)
+      case 'CLICKS':
+        return row.clicks.toString()
+    }
+  }
+
+  const getWindValue = (row: TrajectoryResult): string => {
+    switch (outputUnit) {
+      case 'MOA':
+        return row.windMOA.toFixed(2)
+      case 'MIL':
+        return row.windMIL.toFixed(2)
+      case 'CM':
+        return (row.windInches * 2.54).toFixed(1)
+      case 'CLICKS':
+        const clickUnit = ballisticData?.turretUnits || 'MOA'
+        const clickValue = ballisticData?.clickValue || 0.25
+        const windInUnit = clickUnit === 'MIL' ? row.windMIL : row.windMOA
+        return Math.round(windInUnit / clickValue).toString()
+    }
+  }
+
+  const getUnitLabel = (): string => {
+    switch (outputUnit) {
+      case 'MOA':
+        return 'MOA'
+      case 'MIL':
+        return 'MIL'
+      case 'CM':
+        return 'cm'
+      case 'CLICKS':
+        return 'clicks'
+    }
+  }
+
   return (
     <div className="space-y-4 md:space-y-6">
       <Card className="p-4 md:p-6">
@@ -92,25 +134,23 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
               <Table>
                 <TableHeader>
                   <TableRow className="bg-secondary">
-                    <TableHead className="text-foreground font-bold text-xs">Range</TableHead>
-                    <TableHead className="text-foreground font-bold text-xs">Drop</TableHead>
-                    <TableHead className="text-foreground font-bold text-xs hidden sm:table-cell">MIL</TableHead>
-                    <TableHead className="text-foreground font-bold text-xs">Wind</TableHead>
-                    <TableHead className="text-foreground font-bold text-xs hidden md:table-cell">Clicks</TableHead>
-                    <TableHead className="text-foreground font-bold text-xs hidden lg:table-cell">Vel</TableHead>
-                    <TableHead className="text-foreground font-bold text-xs hidden lg:table-cell">Energy</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs">Range (yd)</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs">Drop ({getUnitLabel()})</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs">Wind ({getUnitLabel()})</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs hidden md:table-cell">Vel (fps)</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs hidden lg:table-cell">Energy (ft-lb)</TableHead>
+                    <TableHead className="text-foreground font-bold text-xs hidden lg:table-cell">Time (s)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.map((row, i) => (
                     <TableRow key={i} className="border-border">
                       <TableCell className="text-accent font-medium text-xs py-2">{row.range}</TableCell>
-                      <TableCell className="text-success text-xs py-2">{row.dropMOA.toFixed(2)}</TableCell>
-                      <TableCell className="text-success text-xs py-2 hidden sm:table-cell">{row.dropMIL.toFixed(2)}</TableCell>
-                      <TableCell className="text-foreground text-xs py-2">{row.windMOA.toFixed(2)}</TableCell>
-                      <TableCell className="text-amber-400 font-bold text-xs py-2 hidden md:table-cell">{row.clicks}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs py-2 hidden lg:table-cell">{row.velocity.toFixed(0)}</TableCell>
+                      <TableCell className="text-success font-bold text-sm py-2">{getDropValue(row)}</TableCell>
+                      <TableCell className="text-foreground font-bold text-sm py-2">{getWindValue(row)}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs py-2 hidden md:table-cell">{row.velocity.toFixed(0)}</TableCell>
                       <TableCell className="text-muted-foreground text-xs py-2 hidden lg:table-cell">{row.energy.toFixed(0)}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs py-2 hidden lg:table-cell">{row.time.toFixed(3)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -125,26 +165,42 @@ export default function TrajectoryTab({ data, outputUnit, setOutputUnit, ballist
           <h3 className="text-sm text-muted-foreground uppercase tracking-wide mb-4">Summary</h3>
           <div className="space-y-2 md:space-y-3">
             <div className="flex justify-between items-center gap-2">
-              <span className="text-xs text-muted-foreground">Zero shift</span>
+              <span className="text-xs text-muted-foreground">Zero range</span>
               <div className="bg-muted px-3 py-1.5 rounded-md">
-                <span className="text-accent font-bold text-xs">
-                  {ballisticData.zeroOffset.toFixed(2)} {ballisticData.turretUnits}
+                <span className="text-accent font-bold text-sm">
+                  {ballisticData.zeroDistance} yd
                 </span>
               </div>
             </div>
             <div className="flex justify-between items-center gap-2">
-              <span className="text-xs text-muted-foreground">Wind hold @ 500</span>
+              <span className="text-xs text-muted-foreground">Drop @ 500 yd</span>
               <div className="bg-muted px-3 py-1.5 rounded-md">
-                <span className="text-accent font-bold text-xs">
-                  {data.find(d => d.range === 500)?.windMOA.toFixed(2) || 'N/A'} MOA
+                <span className="text-accent font-bold text-sm">
+                  {data.find(d => d.range === 500) ? getDropValue(data.find(d => d.range === 500)!) : 'N/A'} {getUnitLabel()}
                 </span>
               </div>
             </div>
             <div className="flex justify-between items-center gap-2">
-              <span className="text-xs text-muted-foreground">Clicks @ 500</span>
+              <span className="text-xs text-muted-foreground">Wind @ 500 yd</span>
               <div className="bg-muted px-3 py-1.5 rounded-md">
-                <span className="text-accent font-bold text-xs">
-                  {data.find(d => d.range === 500)?.clicks || 'N/A'}
+                <span className="text-accent font-bold text-sm">
+                  {data.find(d => d.range === 500) ? getWindValue(data.find(d => d.range === 500)!) : 'N/A'} {getUnitLabel()}
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-xs text-muted-foreground">Velocity @ 500 yd</span>
+              <div className="bg-muted px-3 py-1.5 rounded-md">
+                <span className="text-accent font-bold text-sm">
+                  {data.find(d => d.range === 500)?.velocity.toFixed(0) || 'N/A'} fps
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-xs text-muted-foreground">Energy @ 500 yd</span>
+              <div className="bg-muted px-3 py-1.5 rounded-md">
+                <span className="text-accent font-bold text-sm">
+                  {data.find(d => d.range === 500)?.energy.toFixed(0) || 'N/A'} ft-lb
                 </span>
               </div>
             </div>
