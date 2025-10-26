@@ -354,31 +354,29 @@ function stepDrag(
     // Get drag coefficient from table based on current velocity
     const cd = getDragCoefficient(v, bcType, speedOfSound)
     
-    // Calculate time step
-    const dt = h / v
+    // Calculate time step based on horizontal distance to travel
+    const dt = h / Math.max(1, st.vx_fps)
     
-    // Retardation due to drag
-    // Formula: a = -v² * ρ * Cd / (2 * BC)
-    // where ρ is air density ratio and BC is ballistic coefficient
-    const retardation = (v * v * densityRatio * cd) / (2 * bc)
+    // Drag retardation in ft/s²
+    // Standard ballistic formula: deceleration = (ρ/ρ₀) × Cd × v² / BC
+    // The drag tables give Cd, and we apply density ratio and BC
+    const dragAccel = (densityRatio * cd * v * v) / bc
     
-    // Update velocities using semi-implicit Euler with drag
-    const dvx = -(retardation / v) * st.vx_fps * dt
-    const dvy = -(retardation / v) * st.vy_fps * dt - G_FTPS2 * dt
-    
-    const vx = st.vx_fps + dvx
-    const vy = st.vy_fps + dvy
+    // Update velocities
+    // Drag acts opposite to velocity direction, so we need to decompose
+    const vx_new = st.vx_fps - (dragAccel / v) * st.vx_fps * dt
+    const vy_new = st.vy_fps - (dragAccel / v) * st.vy_fps * dt - G_FTPS2 * dt
 
-    // Use average velocity for position update
-    const vx_avg = 0.5 * (st.vx_fps + vx)
-    const vy_avg = 0.5 * (st.vy_fps + vy)
+    // Use average velocity for position update (trapezoidal integration)
+    const vx_avg = 0.5 * (st.vx_fps + vx_new)
+    const vy_avg = 0.5 * (st.vy_fps + vy_new)
 
     st = {
       x_ft: st.x_ft + vx_avg * dt,
       y_ft: st.y_ft + vy_avg * dt,
-      vx_fps: vx,
-      vy_fps: vy,
-      v_fps: Math.hypot(vx, vy),
+      vx_fps: vx_new,
+      vy_fps: vy_new,
+      v_fps: Math.hypot(vx_new, vy_new),
       t_s: st.t_s + dt,
     }
   }
