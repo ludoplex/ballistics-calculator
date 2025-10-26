@@ -331,9 +331,9 @@ type SimState = {
 
 // Calculate speed of sound based on temperature
 function calculateSpeedOfSound(tempF: number): number {
-  // Speed of sound in fps = 1116.45 * sqrt(T/518.67) where T is in Rankine
+  // Speed of sound in fps = SPEED_OF_SOUND_FPS * sqrt(T/518.67) where T is in Rankine
   const tempR = tempF + 459.67
-  return 1116.45 * Math.sqrt(tempR / 518.67)
+  return SPEED_OF_SOUND_FPS * Math.sqrt(tempR / 518.67)
 }
 
 function stepDrag(
