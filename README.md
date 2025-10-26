@@ -1,6 +1,9 @@
 # Copilot typescript generated Ballistics Calculator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://ludoplex.github.io/ballistics-calculator/)
+
+**🎯 [Try the Live Demo](https://ludoplex.github.io/ballistics-calculator/)** - Experience the ballistics calculator in action!
 
 A professional-grade external ballistics calculator for long-range shooting sports and hunting. Copilot typescript generated Ballistics Calculator provides precision trajectory solutions accounting for bullet drop, wind drift, atmospheric conditions, and advanced effects like Coriolis and spin drift.
 
