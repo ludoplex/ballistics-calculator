@@ -351,21 +351,20 @@ function stepDrag(
   for (let i = 0; i < subSteps; i++) {
     const v = Math.max(1, st.v_fps)
     
-    // Get drag coefficient from table based on current velocity
-    const cd = getDragCoefficient(v, bcType, speedOfSound)
+    // Get drag function value i(v) from table
+    const dragFunction = getDragCoefficient(v, bcType, speedOfSound)
     
-    // Calculate time step based on horizontal distance to travel
-    const dt = h / Math.max(1, st.vx_fps)
+    // Time step: we're stepping horizontally by h feet, so dt = h / vx
+    const dt = h / Math.max(1, Math.abs(st.vx_fps))
     
-    // Drag retardation in ft/s²
-    // Standard ballistic formula: deceleration = (ρ/ρ₀) × Cd × v² / BC
-    // The drag tables give Cd, and we apply density ratio and BC
-    const dragAccel = (densityRatio * cd * v * v) / bc
+    // Ballistic retardation formula:
+    // a = -(ρ/ρ₀) × g × i(v) / BC
+    // where g = 32.174 ft/s² and i(v) is from drag tables
+    const retardation = (densityRatio * G_FTPS2 * dragFunction) / bc
     
-    // Update velocities
-    // Drag acts opposite to velocity direction, so we need to decompose
-    const vx_new = st.vx_fps - (dragAccel / v) * st.vx_fps * dt
-    const vy_new = st.vy_fps - (dragAccel / v) * st.vy_fps * dt - G_FTPS2 * dt
+    // Apply retardation opposite to velocity direction
+    const vx_new = st.vx_fps - (retardation / v) * st.vx_fps * dt
+    const vy_new = st.vy_fps - (retardation / v) * st.vy_fps * dt - G_FTPS2 * dt
 
     // Use average velocity for position update (trapezoidal integration)
     const vx_avg = 0.5 * (st.vx_fps + vx_new)
