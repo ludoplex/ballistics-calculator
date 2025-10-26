@@ -376,7 +376,7 @@ function stepDrag(
     const vy_avg = 0.5 * (st.vy_fps + vy_new)
 
     st = {
-      x_ft: st.x_ft + vx_avg * dt,
+      x_ft: st.x_ft + h,
       y_ft: st.y_ft + vy_avg * dt,
       vx_fps: vx_new,
       vy_fps: vy_new,
