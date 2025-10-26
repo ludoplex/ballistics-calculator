@@ -43,9 +43,13 @@ a = -(ρ/ρ₀) × g × i(v) / BC
 
 Where:
 - ρ/ρ₀ = atmospheric density ratio
-- g = 32.174 ft/s² (gravitational acceleration)
+- g = 32.174 ft/s² (standard gravity g₀ at sea level, 45° latitude)
 - i(v) = drag function from G1/G7 tables
 - BC = ballistic coefficient
+
+Note: Standard gravity is used per ballistics convention. Local gravity varies
+by ~0.5% with latitude and altitude but this variation is negligible compared
+to other ballistic factors.
 ```
 
 ### Drag Table Sources
