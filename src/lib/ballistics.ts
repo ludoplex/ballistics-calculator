@@ -355,16 +355,21 @@ function stepDrag(
     const dragFunction = getDragCoefficient(v, bcType, speedOfSound)
     
     // Time step: we're stepping horizontally by h feet, so dt = h / vx
-    const dt = h / Math.max(1, Math.abs(st.vx_fps))
+    // Note: vx should remain positive in normal ballistic trajectory
+    if (st.vx_fps <= 0) {
+      // Projectile stopped or moving backwards - physics error
+      return st
+    }
+    const dt = h / st.vx_fps
     
     // Ballistic retardation formula:
-    // a = -(ρ/ρ₀) × g × i(v) / BC
+    // a = -(ρ/ρ₀) × g × i(v) / BC  (negative because drag opposes motion)
     // where g = 32.174 ft/s² and i(v) is from drag tables
-    const retardation = (densityRatio * G_FTPS2 * dragFunction) / bc
+    const retardation = -(densityRatio * G_FTPS2 * dragFunction) / bc
     
-    // Apply retardation opposite to velocity direction
-    const vx_new = st.vx_fps - (retardation / v) * st.vx_fps * dt
-    const vy_new = st.vy_fps - (retardation / v) * st.vy_fps * dt - G_FTPS2 * dt
+    // Apply retardation to velocity components (negative, opposing motion)
+    const vx_new = st.vx_fps + (retardation / v) * st.vx_fps * dt
+    const vy_new = st.vy_fps + (retardation / v) * st.vy_fps * dt - G_FTPS2 * dt
 
     // Use average velocity for position update (trapezoidal integration)
     const vx_avg = 0.5 * (st.vx_fps + vx_new)
