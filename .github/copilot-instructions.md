@@ -154,7 +154,7 @@ export default function MyComponent() {
 - Zero distance: > 0 yards (no upper limit enforced)
 - Scope height: > 0 inches (no upper limit enforced)
 - Temperature: -40°C to 60°C
-- Altitude: 0-5000 meters
+- Altitude: 0-5000m
 
 ## Adding New Features
 
