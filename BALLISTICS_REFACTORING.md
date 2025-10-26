@@ -43,7 +43,7 @@ a = -(ρ/ρ₀) × g × i(v) / BC
 
 Where:
 - ρ/ρ₀ = atmospheric density ratio
-- g = 32.174 ft/s² (standard gravity g₀ at sea level, 45° latitude)
+- g = 32.174 ft/s² (standard gravity g₀, defined universal constant)
 - i(v) = drag function from G1/G7 tables
 - BC = ballistic coefficient
 
