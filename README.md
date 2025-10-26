@@ -261,7 +261,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For questions or issues:
-- Open an [issue](https://github.com/yourusername/gundom-ballistics/issues)
+- Open an [issue](https://github.com/yourusername/ Copilot typescript generated Ballistics Calculator-ballistics/issues)
 - Check the [PRD.md](PRD.md) for detailed feature documentation
 
 ---
