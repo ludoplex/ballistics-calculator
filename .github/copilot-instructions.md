@@ -38,7 +38,7 @@ src/
 
 ## Development Commands
 
-- `npm run dev` - Start development server (opens at http://localhost:5173)
+- `npm run dev` - Start development server (default: http://localhost:5173, may vary based on port availability)
 - `npm run build` - Build for production (outputs to `dist/`)
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint (requires dependencies installed)
@@ -86,7 +86,8 @@ export default function MyComponent() {
 
 ### Styling
 - Use Tailwind CSS utility classes exclusively
-- Follow the Tailwind v4 syntax
+- Follow the Tailwind v4 syntax (using `@tailwindcss/vite` plugin)
+- Tailwind v4 uses CSS-first configuration with `@import "tailwindcss"` instead of JS config
 - Use theme variables defined in `src/index.css` for colors
 - Use the `cn()` utility from `@/lib/utils` for conditional classes
 - Maintain responsive design with mobile-first approach
@@ -102,10 +103,11 @@ export default function MyComponent() {
 ```
 
 ### State Management
-- Use `useKV` for data that must persist across sessions:
+- Use `useKV` (from `@github/spark/hooks`) for data that must persist across sessions:
   - Ballistic data (`ballistic-data`)
   - User profiles
   - Settings
+  - Note: `useKV` is a Spark framework hook for key-value storage with browser persistence
 - Use `useState` for UI-only state:
   - Active tab
   - Temporary form inputs
@@ -145,11 +147,14 @@ export default function MyComponent() {
 4. Display in table with unit conversion (MOA/MIL/CM/CLICKS)
 
 ### Important Validation Rules
-- Muzzle velocity: 500-5000 fps
-- Ballistic coefficient: 0.1-1.5
-- Bullet mass: 10-1000 grains
-- Zero distance: 25-500 yards
-- Wind speed: 0-100 mph
+(Defined in `src/lib/profiles.ts` - validateBallisticData function)
+- Muzzle velocity: 500-4500 fps
+- Ballistic coefficient: 0.1-1.0
+- Bullet mass: > 0 grains (no upper limit enforced)
+- Zero distance: > 0 yards (no upper limit enforced)
+- Scope height: > 0 inches (no upper limit enforced)
+- Temperature: -40°C to 60°C
+- Altitude: 0-5000 meters
 
 ## Adding New Features
 
