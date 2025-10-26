@@ -2,9 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A professional-grade external ballistics calculator for long-range shooting sports and hunting. GUNDOM provides precision trajectory solutions accounting for bullet drop, wind drift, atmospheric conditions, and advanced effects like Coriolis and spin drift.
+A professional-grade external ballistics calculator for long-range shooting sports and hunting. Copilot typescript generated Ballistics Calculator provides precision trajectory solutions accounting for bullet drop, wind drift, atmospheric conditions, and advanced effects like Coriolis and spin drift.
 
-![GUNDOM Ballistics Calculator](https://img.shields.io/badge/status-active-success)
+![ Copilot typescript generated Ballistics Calculator](https://img.shields.io/badge/status-active-success)
 
 ## Features
 
@@ -151,7 +151,7 @@ gundom-ballistics/
 
 ## Ballistics Calculations
 
-GUNDOM uses industry-standard ballistic equations to model bullet flight:
+ Copilot typescript generated Ballistics Calculator uses industry-standard ballistic equations to model bullet flight:
 
 ### Physics Models
 - **Drag Models**: G1 and G7 ballistic coefficients
