@@ -1,32 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { calculateTrajectory } from '../src/lib/ballistics'
+import { calculateTrajectory, interpolateDrag, getDragCoefficient } from '../src/lib/ballistics'
 import { G1_DRAG_TABLE, G7_DRAG_TABLE } from '../src/lib/drag-tables'
 import type { BallisticData } from '../src/lib/types'
-
-// Helper function to perform linear interpolation (copied from ballistics.ts for testing)
-function interpolateDrag(dragTable: [number, number][], mach: number): number {
-  if (mach <= dragTable[0][0]) return dragTable[0][1]
-  if (mach >= dragTable[dragTable.length - 1][0]) return dragTable[dragTable.length - 1][1]
-
-  for (let i = 0; i < dragTable.length - 1; i++) {
-    const [m1, cd1] = dragTable[i]
-    const [m2, cd2] = dragTable[i + 1]
-    
-    if (mach >= m1 && mach <= m2) {
-      const t = (mach - m1) / (m2 - m1)
-      return cd1 + t * (cd2 - cd1)
-    }
-  }
-  
-  return dragTable[dragTable.length - 1][1]
-}
-
-// Helper function to get drag coefficient (copied from ballistics.ts for testing)
-function getDragCoefficient(velocityFps: number, bcType: 'G1' | 'G7', speedOfSound: number): number {
-  const mach = velocityFps / speedOfSound
-  const dragTable = bcType === 'G7' ? G7_DRAG_TABLE : G1_DRAG_TABLE
-  return interpolateDrag(dragTable, mach)
-}
 
 describe('Drag Table Interpolation', () => {
   describe('interpolateDrag', () => {

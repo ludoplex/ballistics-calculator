@@ -65,7 +65,7 @@ function computeClicks(unit: 'MOA' | 'MIL', clickValue: number, dropMOA: number,
  * @param mach - Mach number (velocity / speed of sound, dimensionless)
  * @returns Drag coefficient (Cd, dimensionless)
  */
-function interpolateDrag(dragTable: [number, number][], mach: number): number {
+export function interpolateDrag(dragTable: [number, number][], mach: number): number {
   if (mach <= dragTable[0][0]) return dragTable[0][1]
   if (mach >= dragTable[dragTable.length - 1][0]) return dragTable[dragTable.length - 1][1]
 
@@ -90,7 +90,7 @@ function interpolateDrag(dragTable: [number, number][], mach: number): number {
  * @param speedOfSound - Speed of sound in fps (temperature-dependent)
  * @returns Drag coefficient (Cd, dimensionless)
  */
-function getDragCoefficient(velocityFps: number, bcType: 'G1' | 'G7', speedOfSound: number): number {
+export function getDragCoefficient(velocityFps: number, bcType: 'G1' | 'G7', speedOfSound: number): number {
   const mach = velocityFps / speedOfSound
   const dragTable = bcType === 'G7' ? G7_DRAG_TABLE : G1_DRAG_TABLE
   return interpolateDrag(dragTable, mach)
