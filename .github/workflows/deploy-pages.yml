@@ -32,6 +32,9 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
+      - name: Copy .nojekyll to dist
+        run: cp .nojekyll dist/
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v3
 
